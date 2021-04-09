@@ -6,8 +6,8 @@
 package org.jetbrains.kotlin.idea.fir.low.level.api.constistency.structure
 
 import com.intellij.openapi.projectRoots.Sdk
+import com.intellij.openapi.roots.LanguageLevelProjectExtension
 import com.intellij.testFramework.LightProjectDescriptor
-import org.jetbrains.kotlin.codegen.forTestCompile.ForTestCompileRuntime
 import org.jetbrains.kotlin.config.LanguageVersionSettings
 import org.jetbrains.kotlin.idea.caches.project.IdeaModuleInfo
 import org.jetbrains.kotlin.idea.caches.project.ModuleSourceInfo
@@ -18,16 +18,15 @@ import org.jetbrains.kotlin.idea.fir.low.level.api.api.getFirFile
 import org.jetbrains.kotlin.idea.fir.low.level.api.createResolveStateForNoCaching
 import org.jetbrains.kotlin.idea.project.withLanguageVersionSettings
 import org.jetbrains.kotlin.idea.test.*
+import org.jetbrains.kotlin.idea.test.PluginTestCaseBase.getLanguageLevel
 import org.jetbrains.kotlin.psi.KtFile
-import org.jetbrains.kotlin.test.ConfigurationKind
 import org.jetbrains.kotlin.test.TestConfiguration
 import org.jetbrains.kotlin.test.TestRunner
 import org.jetbrains.kotlin.test.builders.TestConfigurationBuilder
 import org.jetbrains.kotlin.test.builders.testConfiguration
-import org.jetbrains.kotlin.test.builders.testRunner
 import org.jetbrains.kotlin.test.directives.FirDiagnosticsDirectives
-import org.jetbrains.kotlin.test.directives.JvmEnvironmentConfigurationDirectives
 import org.jetbrains.kotlin.test.directives.model.DirectivesContainer
+import org.jetbrains.kotlin.test.directives.model.RegisteredDirectives
 import org.jetbrains.kotlin.test.frontend.fir.FirOutputArtifact
 import org.jetbrains.kotlin.test.model.*
 import org.jetbrains.kotlin.test.runners.*
@@ -41,6 +40,18 @@ abstract class AbstractCompilerBasedTest : KotlinLightCodeInsightFixtureTestCase
 
     protected val modules: TestModuleStructure get() = _modules!!
     protected val configuration: TestConfiguration get() = _configuration!!
+
+
+    private fun <R> withLanguageLevel(directives: RegisteredDirectives, action: () -> R): R {
+        val oldJavaLanguageLevel = LanguageLevelProjectExtension.getInstance(project).languageLevel
+        val requiredLanguageLevel = getLanguageLevel(JvmEnvironmentConfigurator.extractJdkKind(directives))
+        LanguageLevelProjectExtension.getInstance(project).languageLevel = requiredLanguageLevel
+        return try {
+            action()
+        } finally {
+            LanguageLevelProjectExtension.getInstance(project).languageLevel = oldJavaLanguageLevel
+        }
+    }
 
     inner class LowLevelFirFrontendFacade(
         testServices: TestServices
@@ -116,7 +127,9 @@ abstract class AbstractCompilerBasedTest : KotlinLightCodeInsightFixtureTestCase
 
     fun doTest(path: String) {
         if (ignoreTest()) return
-        TestRunner(configuration).runTest(path)
+        withLanguageLevel(modules.allDirectives) {
+            TestRunner(configuration).runTest(path)
+        }
     }
 
     private fun ignoreTest(): Boolean {

@@ -6147,6 +6147,16 @@ public class DiagnosisCompilerTestFE10TestdataTestGenerated extends AbstractDiag
                 runTest("compiler/testData/diagnostics/tests/delegatedProperty/typeMismatchForThisGetParameter.kt");
             }
 
+            @TestMetadata("useTypeParameterOfExtensionProperty.kt")
+            public void testUseTypeParameterOfExtensionProperty() throws Exception {
+                runTest("compiler/testData/diagnostics/tests/delegatedProperty/useTypeParameterOfExtensionProperty.kt");
+            }
+
+            @TestMetadata("useTypeParameterOfExtensionProperty_Disabled.kt")
+            public void testUseTypeParameterOfExtensionProperty_Disabled() throws Exception {
+                runTest("compiler/testData/diagnostics/tests/delegatedProperty/useTypeParameterOfExtensionProperty_Disabled.kt");
+            }
+
             @TestMetadata("wrongCountOfParametersInGet.kt")
             public void testWrongCountOfParametersInGet() throws Exception {
                 runTest("compiler/testData/diagnostics/tests/delegatedProperty/wrongCountOfParametersInGet.kt");
@@ -7960,6 +7970,54 @@ public class DiagnosisCompilerTestFE10TestdataTestGenerated extends AbstractDiag
             @TestMetadata("kt24158.kt")
             public void testKt24158() throws Exception {
                 runTest("compiler/testData/diagnostics/tests/exceptions/kt24158.kt");
+            }
+        }
+
+        @TestMetadata("compiler/testData/diagnostics/tests/explicitDefinitelyNotNull")
+        @TestDataPath("$PROJECT_ROOT")
+        @RunWith(JUnit3RunnerWithInners.class)
+        public static class ExplicitDefinitelyNotNull extends AbstractDiagnosisCompilerTestDataTest {
+            private void runTest(String testDataFilePath) throws Exception {
+                KotlinTestUtils.runTest(this::doTest, this, testDataFilePath);
+            }
+
+            public void testAllFilesPresentInExplicitDefinitelyNotNull() throws Exception {
+                KtTestUtil.assertAllTestsPresentByMetadataWithExcluded(this.getClass(), new File("compiler/testData/diagnostics/tests/explicitDefinitelyNotNull"), Pattern.compile("^(.+)\\.kt$"), Pattern.compile("^(.+)\\.fir\\.kts?$"), true);
+            }
+
+            @TestMetadata("approximation.kt")
+            public void testApproximation() throws Exception {
+                runTest("compiler/testData/diagnostics/tests/explicitDefinitelyNotNull/approximation.kt");
+            }
+
+            @TestMetadata("disabledFeature.kt")
+            public void testDisabledFeature() throws Exception {
+                runTest("compiler/testData/diagnostics/tests/explicitDefinitelyNotNull/disabledFeature.kt");
+            }
+
+            @TestMetadata("inference.kt")
+            public void testInference() throws Exception {
+                runTest("compiler/testData/diagnostics/tests/explicitDefinitelyNotNull/inference.kt");
+            }
+
+            @TestMetadata("notApplicable.kt")
+            public void testNotApplicable() throws Exception {
+                runTest("compiler/testData/diagnostics/tests/explicitDefinitelyNotNull/notApplicable.kt");
+            }
+
+            @TestMetadata("overrides.kt")
+            public void testOverrides() throws Exception {
+                runTest("compiler/testData/diagnostics/tests/explicitDefinitelyNotNull/overrides.kt");
+            }
+
+            @TestMetadata("overridesJavaAnnotated.kt")
+            public void testOverridesJavaAnnotated() throws Exception {
+                runTest("compiler/testData/diagnostics/tests/explicitDefinitelyNotNull/overridesJavaAnnotated.kt");
+            }
+
+            @TestMetadata("simple.kt")
+            public void testSimple() throws Exception {
+                runTest("compiler/testData/diagnostics/tests/explicitDefinitelyNotNull/simple.kt");
             }
         }
 
@@ -25201,6 +25259,11 @@ public class DiagnosisCompilerTestFE10TestdataTestGenerated extends AbstractDiag
             @TestMetadata("deprecatedSyntax.kt")
             public void testDeprecatedSyntax() throws Exception {
                 runTest("compiler/testData/diagnostics/tests/typeParameters/deprecatedSyntax.kt");
+            }
+
+            @TestMetadata("destructuringDeclarations.kt")
+            public void testDestructuringDeclarations() throws Exception {
+                runTest("compiler/testData/diagnostics/tests/typeParameters/destructuringDeclarations.kt");
             }
 
             @TestMetadata("dontIntersectUpperBoundWithExpectedType.kt")

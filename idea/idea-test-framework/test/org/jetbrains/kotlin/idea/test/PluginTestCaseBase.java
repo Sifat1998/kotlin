@@ -25,6 +25,7 @@ import com.intellij.openapi.projectRoots.impl.JavaSdkImpl;
 import com.intellij.openapi.util.Disposer;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.openapi.vfs.newvfs.impl.VfsRootAccess;
+import com.intellij.pom.java.LanguageLevel;
 import com.intellij.testFramework.IdeaTestUtil;
 import kotlin.jvm.functions.Function0;
 import org.jetbrains.annotations.NotNull;
@@ -120,6 +121,26 @@ public class PluginTestCaseBase {
                 return fullJdk();
             case FULL_JDK_15:
                 return jdkByVersion("15", KtTestUtil.getJdk15Home());
+            default:
+                throw new UnsupportedOperationException(kind.toString());
+        }
+    }
+
+    @NotNull
+    public static LanguageLevel getLanguageLevel(@NotNull TestJdkKind kind) {
+        switch (kind) {
+            case MOCK_JDK:
+                return LanguageLevel.JDK_1_8;
+            case MODIFIED_MOCK_JDK:
+                return LanguageLevel.JDK_11;
+            case FULL_JDK_6:
+                return LanguageLevel.JDK_1_6;
+            case FULL_JDK_9:
+                return LanguageLevel.JDK_1_9;
+            case FULL_JDK:
+                return LanguageLevel.JDK_1_8;
+            case FULL_JDK_15:
+                return LanguageLevel.JDK_15_PREVIEW;
             default:
                 throw new UnsupportedOperationException(kind.toString());
         }
