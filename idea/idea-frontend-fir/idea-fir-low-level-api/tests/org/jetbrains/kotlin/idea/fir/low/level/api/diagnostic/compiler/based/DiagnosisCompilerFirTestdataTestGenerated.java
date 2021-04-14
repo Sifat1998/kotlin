@@ -498,6 +498,11 @@ public class DiagnosisCompilerFirTestdataTestGenerated extends AbstractDiagnosis
                 runTest("compiler/fir/analysis-tests/testData/resolve/arguments/ambiguityOnJavaOverride.kt");
             }
 
+            @TestMetadata("argParamTypeMismatch.kt")
+            public void testArgParamTypeMismatch() throws Exception {
+                runTest("compiler/fir/analysis-tests/testData/resolve/arguments/argParamTypeMismatch.kt");
+            }
+
             @TestMetadata("argumentsOfAnnotations.kt")
             public void testArgumentsOfAnnotations() throws Exception {
                 runTest("compiler/fir/analysis-tests/testData/resolve/arguments/argumentsOfAnnotations.kt");
@@ -943,6 +948,11 @@ public class DiagnosisCompilerFirTestdataTestGenerated extends AbstractDiagnosis
                 KtTestUtil.assertAllTestsPresentByMetadataWithExcluded(this.getClass(), new File("compiler/fir/analysis-tests/testData/resolve/constVal"), Pattern.compile("^([^.]+)\\.kt$"), null, true);
             }
 
+            @TestMetadata("const.kt")
+            public void testConst() throws Exception {
+                runTest("compiler/fir/analysis-tests/testData/resolve/constVal/const.kt");
+            }
+
             @TestMetadata("constValNotTopLevelOrObject.kt")
             public void testConstValNotTopLevelOrObject() throws Exception {
                 runTest("compiler/fir/analysis-tests/testData/resolve/constVal/constValNotTopLevelOrObject.kt");
@@ -1150,6 +1160,11 @@ public class DiagnosisCompilerFirTestdataTestGenerated extends AbstractDiagnosis
             @TestMetadata("methodOfAnyImplementedInInterface.kt")
             public void testMethodOfAnyImplementedInInterface() throws Exception {
                 runTest("compiler/fir/analysis-tests/testData/resolve/diagnostics/methodOfAnyImplementedInInterface.kt");
+            }
+
+            @TestMetadata("multipleBounds.kt")
+            public void testMultipleBounds() throws Exception {
+                runTest("compiler/fir/analysis-tests/testData/resolve/diagnostics/multipleBounds.kt");
             }
 
             @TestMetadata("nonConstValInAnnotationArgument.kt")
@@ -2681,6 +2696,11 @@ public class DiagnosisCompilerFirTestdataTestGenerated extends AbstractDiagnosis
             @TestMetadata("doubleGenericDiamond.kt")
             public void testDoubleGenericDiamond() throws Exception {
                 runTest("compiler/fir/analysis-tests/testData/resolve/problems/doubleGenericDiamond.kt");
+            }
+
+            @TestMetadata("fakeTypeMismatchOnExtensionReference.kt")
+            public void testFakeTypeMismatchOnExtensionReference() throws Exception {
+                runTest("compiler/fir/analysis-tests/testData/resolve/problems/fakeTypeMismatchOnExtensionReference.kt");
             }
 
             @TestMetadata("falseIntersection.kt")
@@ -4284,6 +4304,55 @@ public class DiagnosisCompilerFirTestdataTestGenerated extends AbstractDiagnosis
             }
         }
 
+        @TestMetadata("compiler/fir/analysis-tests/testData/resolveWithStdlib/diagnostics")
+        @TestDataPath("$PROJECT_ROOT")
+        @RunWith(JUnit3RunnerWithInners.class)
+        public static class Diagnostics extends AbstractDiagnosisCompilerTestDataTest {
+            private void runTest(String testDataFilePath) throws Exception {
+                KotlinTestUtils.runTest(this::doTest, this, testDataFilePath);
+            }
+
+            public void testAllFilesPresentInDiagnostics() throws Exception {
+                KtTestUtil.assertAllTestsPresentByMetadataWithExcluded(this.getClass(), new File("compiler/fir/analysis-tests/testData/resolveWithStdlib/diagnostics"), Pattern.compile("^([^.]+)\\.kt$"), null, true);
+            }
+
+            @TestMetadata("compiler/fir/analysis-tests/testData/resolveWithStdlib/diagnostics/functionReturnTypeMismatchChecker")
+            @TestDataPath("$PROJECT_ROOT")
+            @RunWith(JUnit3RunnerWithInners.class)
+            public static class FunctionReturnTypeMismatchChecker extends AbstractDiagnosisCompilerTestDataTest {
+                private void runTest(String testDataFilePath) throws Exception {
+                    KotlinTestUtils.runTest(this::doTest, this, testDataFilePath);
+                }
+
+                public void testAllFilesPresentInFunctionReturnTypeMismatchChecker() throws Exception {
+                    KtTestUtil.assertAllTestsPresentByMetadataWithExcluded(this.getClass(), new File("compiler/fir/analysis-tests/testData/resolveWithStdlib/diagnostics/functionReturnTypeMismatchChecker"), Pattern.compile("^([^.]+)\\.kt$"), null, true);
+                }
+
+                @TestMetadata("basic.kt")
+                public void testBasic() throws Exception {
+                    runTest("compiler/fir/analysis-tests/testData/resolveWithStdlib/diagnostics/functionReturnTypeMismatchChecker/basic.kt");
+                }
+            }
+
+            @TestMetadata("compiler/fir/analysis-tests/testData/resolveWithStdlib/diagnostics/initializerTypeMismatchChecker")
+            @TestDataPath("$PROJECT_ROOT")
+            @RunWith(JUnit3RunnerWithInners.class)
+            public static class InitializerTypeMismatchChecker extends AbstractDiagnosisCompilerTestDataTest {
+                private void runTest(String testDataFilePath) throws Exception {
+                    KotlinTestUtils.runTest(this::doTest, this, testDataFilePath);
+                }
+
+                public void testAllFilesPresentInInitializerTypeMismatchChecker() throws Exception {
+                    KtTestUtil.assertAllTestsPresentByMetadataWithExcluded(this.getClass(), new File("compiler/fir/analysis-tests/testData/resolveWithStdlib/diagnostics/initializerTypeMismatchChecker"), Pattern.compile("^([^.]+)\\.kt$"), null, true);
+                }
+
+                @TestMetadata("functionType.kt")
+                public void testFunctionType() throws Exception {
+                    runTest("compiler/fir/analysis-tests/testData/resolveWithStdlib/diagnostics/initializerTypeMismatchChecker/functionType.kt");
+                }
+            }
+        }
+
         @TestMetadata("compiler/fir/analysis-tests/testData/resolveWithStdlib/inference")
         @TestDataPath("$PROJECT_ROOT")
         @RunWith(JUnit3RunnerWithInners.class)
@@ -4671,6 +4740,11 @@ public class DiagnosisCompilerFirTestdataTestGenerated extends AbstractDiagnosis
             @TestMetadata("KJKComplexHierarchyNestedLoop.kt")
             public void testKJKComplexHierarchyNestedLoop() throws Exception {
                 runTest("compiler/fir/analysis-tests/testData/resolveWithStdlib/problems/KJKComplexHierarchyNestedLoop.kt");
+            }
+
+            @TestMetadata("KtFirCompositeScope.kt")
+            public void testKtFirCompositeScope() throws Exception {
+                runTest("compiler/fir/analysis-tests/testData/resolveWithStdlib/problems/KtFirCompositeScope.kt");
             }
 
             @TestMetadata("lightMember.kt")
