@@ -7,6 +7,7 @@ package org.jetbrains.kotlin.idea.fir.low.level.api.constistency.structure
 
 import org.jetbrains.kotlin.test.services.AssertionsService
 import org.jetbrains.kotlin.test.util.JUnit4Assertions
+import org.opentest4j.MultipleFailuresError
 import java.io.File
 
 internal object JUnit4AssertionsService : AssertionsService() {
@@ -39,7 +40,12 @@ internal object JUnit4AssertionsService : AssertionsService() {
     }
 
     override fun assertAll(exceptions: List<Throwable>) {
-        JUnit4Assertions.assertAll(exceptions)
+        when (exceptions.size) {
+            0 -> Unit
+            1 -> throw exceptions.single()
+            else -> throw MultipleFailuresError("Multiple failures", exceptions)
+        }
+
     }
 
     override fun fail(message: () -> String): Nothing {
