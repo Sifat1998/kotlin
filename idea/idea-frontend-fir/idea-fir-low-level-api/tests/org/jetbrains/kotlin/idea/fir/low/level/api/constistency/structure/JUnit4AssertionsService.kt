@@ -5,6 +5,7 @@
 
 package org.jetbrains.kotlin.idea.fir.low.level.api.constistency.structure
 
+import com.intellij.rt.execution.junit.FileComparisonFailure
 import org.jetbrains.kotlin.test.services.AssertionsService
 import org.jetbrains.kotlin.test.util.JUnit4Assertions
 import org.opentest4j.MultipleFailuresError
@@ -43,7 +44,14 @@ internal object JUnit4AssertionsService : AssertionsService() {
         when (exceptions.size) {
             0 -> Unit
             1 -> throw exceptions.single()
-            else -> throw MultipleFailuresError("Multiple failures", exceptions)
+            else -> {
+                val filtered = exceptions.filterNot { it is FileComparisonFailure }
+                if (filtered.isEmpty()) {
+                    throw exceptions.first()
+                } else {
+                    throw filtered.first()
+                }
+            }
         }
 
     }
