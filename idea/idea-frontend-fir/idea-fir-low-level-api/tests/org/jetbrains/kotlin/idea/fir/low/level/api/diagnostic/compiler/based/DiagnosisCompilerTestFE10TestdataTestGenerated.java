@@ -1548,6 +1548,39 @@ public class DiagnosisCompilerTestFE10TestdataTestGenerated extends AbstractDiag
                 }
             }
 
+            @TestMetadata("compiler/testData/diagnostics/tests/annotations/typeUse")
+            @TestDataPath("$PROJECT_ROOT")
+            @RunWith(JUnit3RunnerWithInners.class)
+            public static class TypeUse extends AbstractDiagnosisCompilerTestDataTest {
+                private void runTest(String testDataFilePath) throws Exception {
+                    KotlinTestUtils.runTest(this::doTest, this, testDataFilePath);
+                }
+
+                public void testAllFilesPresentInTypeUse() throws Exception {
+                    KtTestUtil.assertAllTestsPresentByMetadataWithExcluded(this.getClass(), new File("compiler/testData/diagnostics/tests/annotations/typeUse"), Pattern.compile("^(.+)\\.kt$"), Pattern.compile("^(.+)\\.fir\\.kts?$"), true);
+                }
+
+                @TestMetadata("kt19455.kt")
+                public void testKt19455() throws Exception {
+                    runTest("compiler/testData/diagnostics/tests/annotations/typeUse/kt19455.kt");
+                }
+
+                @TestMetadata("kt25876.kt")
+                public void testKt25876() throws Exception {
+                    runTest("compiler/testData/diagnostics/tests/annotations/typeUse/kt25876.kt");
+                }
+
+                @TestMetadata("kt8325.kt")
+                public void testKt8325() throws Exception {
+                    runTest("compiler/testData/diagnostics/tests/annotations/typeUse/kt8325.kt");
+                }
+
+                @TestMetadata("nonTypeUseAnnotationOnType.kt")
+                public void testNonTypeUseAnnotationOnType() throws Exception {
+                    runTest("compiler/testData/diagnostics/tests/annotations/typeUse/nonTypeUseAnnotationOnType.kt");
+                }
+            }
+
             @TestMetadata("compiler/testData/diagnostics/tests/annotations/withUseSiteTarget")
             @TestDataPath("$PROJECT_ROOT")
             @RunWith(JUnit3RunnerWithInners.class)
@@ -3641,6 +3674,16 @@ public class DiagnosisCompilerTestFE10TestdataTestGenerated extends AbstractDiag
             @TestMetadata("resolveFunctionInsideClassObject.kt")
             public void testResolveFunctionInsideClassObject() throws Exception {
                 runTest("compiler/testData/diagnostics/tests/classObjects/resolveFunctionInsideClassObject.kt");
+            }
+
+            @TestMetadata("selfCallsInCompanionSuperConstructor_error.kt")
+            public void testSelfCallsInCompanionSuperConstructor_error() throws Exception {
+                runTest("compiler/testData/diagnostics/tests/classObjects/selfCallsInCompanionSuperConstructor_error.kt");
+            }
+
+            @TestMetadata("selfCallsInCompanionSuperConstructor_warning.kt")
+            public void testSelfCallsInCompanionSuperConstructor_warning() throws Exception {
+                runTest("compiler/testData/diagnostics/tests/classObjects/selfCallsInCompanionSuperConstructor_warning.kt");
             }
 
             @TestMetadata("typeParametersInAnnonymousObject.kt")
@@ -16703,6 +16746,16 @@ public class DiagnosisCompilerTestFE10TestdataTestGenerated extends AbstractDiag
                 runTest("compiler/testData/diagnostics/tests/numbers/literalReceiverWithIntegerValueType.kt");
             }
 
+            @TestMetadata("newLiteralOperatorsResolution_newResolve.kt")
+            public void testNewLiteralOperatorsResolution_newResolve() throws Exception {
+                runTest("compiler/testData/diagnostics/tests/numbers/newLiteralOperatorsResolution_newResolve.kt");
+            }
+
+            @TestMetadata("newLiteralOperatorsResolution_warning.kt")
+            public void testNewLiteralOperatorsResolution_warning() throws Exception {
+                runTest("compiler/testData/diagnostics/tests/numbers/newLiteralOperatorsResolution_warning.kt");
+            }
+
             @TestMetadata("numberAsUnionAndIntersection.kt")
             public void testNumberAsUnionAndIntersection() throws Exception {
                 runTest("compiler/testData/diagnostics/tests/numbers/numberAsUnionAndIntersection.kt");
@@ -27059,6 +27112,11 @@ public class DiagnosisCompilerTestFE10TestdataTestGenerated extends AbstractDiag
             runTest("compiler/testData/diagnostics/testsWithStdLib/implicitCastToAny.kt");
         }
 
+        @TestMetadata("implicitNothingInDelegate.kt")
+        public void testImplicitNothingInDelegate() throws Exception {
+            runTest("compiler/testData/diagnostics/testsWithStdLib/implicitNothingInDelegate.kt");
+        }
+
         @TestMetadata("InaccessibleInternalClass.kt")
         public void testInaccessibleInternalClass() throws Exception {
             runTest("compiler/testData/diagnostics/testsWithStdLib/InaccessibleInternalClass.kt");
@@ -29589,6 +29647,24 @@ public class DiagnosisCompilerTestFE10TestdataTestGenerated extends AbstractDiag
                 public void testKotlinMembersVsJavaNonVisibleStatics() throws Exception {
                     runTest("compiler/testData/diagnostics/testsWithStdLib/duplicateJvmSignature/statics/kotlinMembersVsJavaNonVisibleStatics.kt");
                 }
+            }
+        }
+
+        @TestMetadata("compiler/testData/diagnostics/testsWithStdLib/evaluate")
+        @TestDataPath("$PROJECT_ROOT")
+        @RunWith(JUnit3RunnerWithInners.class)
+        public static class Evaluate extends AbstractDiagnosisCompilerTestDataTest {
+            private void runTest(String testDataFilePath) throws Exception {
+                KotlinTestUtils.runTest(this::doTest, this, testDataFilePath);
+            }
+
+            public void testAllFilesPresentInEvaluate() throws Exception {
+                KtTestUtil.assertAllTestsPresentByMetadataWithExcluded(this.getClass(), new File("compiler/testData/diagnostics/testsWithStdLib/evaluate"), Pattern.compile("^(.+)\\.kt$"), Pattern.compile("^(.+)\\.fir\\.kts?$"), true);
+            }
+
+            @TestMetadata("charCodeExpType.kt")
+            public void testCharCodeExpType() throws Exception {
+                runTest("compiler/testData/diagnostics/testsWithStdLib/evaluate/charCodeExpType.kt");
             }
         }
 

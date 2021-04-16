@@ -5,9 +5,14 @@
 
 package org.jetbrains.kotlin.idea.fir.low.level.api.constistency.structure
 
+import com.intellij.codeInsight.ExternalAnnotationsManager
+import com.intellij.openapi.components.serviceIfCreated
+import com.intellij.openapi.project.impl.ProjectExImpl
 import com.intellij.openapi.projectRoots.Sdk
 import com.intellij.openapi.roots.LanguageLevelProjectExtension
+import com.intellij.serviceContainer.ComponentManagerImpl
 import com.intellij.testFramework.LightProjectDescriptor
+import org.jetbrains.kotlin.cli.jvm.compiler.MockExternalAnnotationsManager
 import org.jetbrains.kotlin.config.LanguageVersionSettings
 import org.jetbrains.kotlin.idea.caches.project.IdeaModuleInfo
 import org.jetbrains.kotlin.idea.caches.project.ModuleSourceInfo
@@ -41,6 +46,7 @@ abstract class AbstractCompilerBasedTest : KotlinLightCodeInsightFixtureTestCase
     protected val modules: TestModuleStructure get() = _modules!!
     protected val configuration: TestConfiguration get() = _configuration!!
 
+    private var oldAnnoatationManager: ExternalAnnotationsManager? = null
 
     private fun <R> withLanguageLevel(directives: RegisteredDirectives, action: () -> R): R {
         val oldJavaLanguageLevel = LanguageLevelProjectExtension.getInstance(project).languageLevel
@@ -98,6 +104,27 @@ abstract class AbstractCompilerBasedTest : KotlinLightCodeInsightFixtureTestCase
             setupConfiguration()
         }
         super.setUp()
+        registerMockExternalAnnotationManager()
+    }
+
+    private fun registerMockExternalAnnotationManager() {
+        oldAnnoatationManager = project.serviceIfCreated()
+        registerAnnotationManager(MockExternalAnnotationsManager())
+    }
+
+    private fun unregisterMockExternalAnnotationManager() {
+        oldAnnoatationManager?.let { old ->
+            registerAnnotationManager(old)
+        }
+    }
+
+    private fun registerAnnotationManager(manager: ExternalAnnotationsManager) {
+        @Suppress("UnstableApiUsage") val projectExImpl = project as ProjectExImpl
+        projectExImpl.registerServiceInstance(
+            ExternalAnnotationsManager::class.java,
+            manager,
+            ComponentManagerImpl.fakeCorePluginDescriptor
+        )
     }
 
     private fun setupConfiguration() {
@@ -119,6 +146,7 @@ abstract class AbstractCompilerBasedTest : KotlinLightCodeInsightFixtureTestCase
     override fun tearDown() {
         _configuration = null
         _modules = null
+        unregisterMockExternalAnnotationManager()
         super.tearDown()
     }
 
