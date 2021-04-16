@@ -6,16 +6,15 @@
 package org.jetbrains.kotlin.fir.resolve.dfa
 
 import org.jetbrains.kotlin.config.LanguageFeature
-import org.jetbrains.kotlin.fir.FirSession
-import org.jetbrains.kotlin.fir.PrivateForInline
+import org.jetbrains.kotlin.fir.*
 import org.jetbrains.kotlin.fir.contracts.FirResolvedContractDescription
 import org.jetbrains.kotlin.fir.contracts.description.ConeBooleanConstantReference
 import org.jetbrains.kotlin.fir.contracts.description.ConeConditionalEffectDeclaration
 import org.jetbrains.kotlin.fir.contracts.description.ConeConstantReference
 import org.jetbrains.kotlin.fir.contracts.description.ConeReturnsEffectDeclaration
+import org.jetbrains.kotlin.fir.contracts.impl.FirEmptyContractDescription
 import org.jetbrains.kotlin.fir.declarations.*
 import org.jetbrains.kotlin.fir.expressions.*
-import org.jetbrains.kotlin.fir.languageVersionSettings
 import org.jetbrains.kotlin.fir.references.FirControlFlowGraphReference
 import org.jetbrains.kotlin.fir.references.FirResolvedNamedReference
 import org.jetbrains.kotlin.fir.resolve.*
@@ -25,12 +24,12 @@ import org.jetbrains.kotlin.fir.resolve.dfa.contracts.createArgumentsMapping
 import org.jetbrains.kotlin.fir.resolve.inference.inferenceComponents
 import org.jetbrains.kotlin.fir.resolve.transformers.body.resolve.FirAbstractBodyResolveTransformer
 import org.jetbrains.kotlin.fir.resolve.transformers.body.resolve.resultType
+import org.jetbrains.kotlin.fir.resolve.transformers.ensureResolved
 import org.jetbrains.kotlin.fir.symbols.AbstractFirBasedSymbol
 import org.jetbrains.kotlin.name.CallableId
 import org.jetbrains.kotlin.name.StandardClassIds
 import org.jetbrains.kotlin.fir.symbols.impl.FirVariableSymbol
 import org.jetbrains.kotlin.fir.types.*
-import org.jetbrains.kotlin.fir.visibilityChecker
 import org.jetbrains.kotlin.fir.visitors.transformSingle
 import org.jetbrains.kotlin.name.FqName
 import org.jetbrains.kotlin.name.Name
@@ -848,7 +847,7 @@ abstract class FirDataFlowAnalyzer<FLOW : Flow>(
     }
 
     private fun processConditionalContract(qualifiedAccess: FirQualifiedAccess) {
-        val owner: FirContractDescriptionOwner? = when (qualifiedAccess) {
+        val owner = when (qualifiedAccess) {
             is FirFunctionCall -> qualifiedAccess.toResolvedCallableSymbol()?.fir as? FirSimpleFunction
             is FirQualifiedAccessExpression -> {
                 val property = (qualifiedAccess.calleeReference as? FirResolvedNamedReference)?.resolvedSymbol?.fir as? FirProperty
@@ -859,9 +858,17 @@ abstract class FirDataFlowAnalyzer<FLOW : Flow>(
                 property?.setter
             }
             else -> null
+        } ?: return
+
+        owner.ensureResolved(FirResolvePhase.CONTRACTS, components.session)
+
+        val contractDescription = when (val description = owner.contractDescription) {
+            is FirResolvedContractDescription -> description
+            is FirEmptyContractDescription -> return
+            else -> error("Unresolved contracts ${description::class} for ${owner.render(FirRenderer.RenderMode.WithResolvePhases)}")
         }
 
-        val contractDescription = owner?.contractDescription as? FirResolvedContractDescription ?: return
+
         val conditionalEffects = contractDescription.effects.map { it.effect }.filterIsInstance<ConeConditionalEffectDeclaration>()
         if (conditionalEffects.isEmpty()) return
         val argumentsMapping = createArgumentsMapping(qualifiedAccess) ?: return
