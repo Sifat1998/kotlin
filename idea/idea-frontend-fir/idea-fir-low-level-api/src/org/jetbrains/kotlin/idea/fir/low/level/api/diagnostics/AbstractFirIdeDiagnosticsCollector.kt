@@ -19,10 +19,7 @@ import org.jetbrains.kotlin.fir.analysis.collectors.components.*
 import org.jetbrains.kotlin.fir.analysis.diagnostics.DiagnosticReporter
 import org.jetbrains.kotlin.fir.analysis.diagnostics.FirDiagnostic
 import org.jetbrains.kotlin.fir.analysis.diagnostics.FirPsiDiagnostic
-import org.jetbrains.kotlin.fir.checkers.CommonDeclarationCheckers
-import org.jetbrains.kotlin.fir.checkers.CommonExpressionCheckers
-import org.jetbrains.kotlin.fir.checkers.ExtendedDeclarationCheckers
-import org.jetbrains.kotlin.fir.checkers.ExtendedExpressionCheckers
+import org.jetbrains.kotlin.fir.checkers.*
 import org.jetbrains.kotlin.fir.resolve.ScopeSession
 import org.jetbrains.kotlin.fir.resolve.transformers.body.resolve.ImplicitBodyResolveComputationSession
 import org.jetbrains.kotlin.fir.resolve.transformers.body.resolve.createReturnTypeCalculatorForIDE
@@ -40,12 +37,20 @@ internal abstract class AbstractFirIdeDiagnosticsCollector(
         val expressionCheckers = CheckersFactory.createExpressionCheckers(useExtendedCheckers)
 
         @Suppress("LeakingThis")
-        initializeComponents(
-            DeclarationCheckersDiagnosticComponent(this, declarationCheckers),
-            ExpressionCheckersDiagnosticComponent(this, expressionCheckers),
-            ErrorNodeDiagnosticCollectorComponent(this),
-            ControlFlowAnalysisDiagnosticComponent(this, declarationCheckers),
-        )
+        if (useExtendedCheckers) {
+            initializeComponents(
+                DeclarationCheckersDiagnosticComponent(this, declarationCheckers),
+                ExpressionCheckersDiagnosticComponent(this, expressionCheckers),
+                ControlFlowAnalysisDiagnosticComponent(this, declarationCheckers),
+            )
+        } else {
+            initializeComponents(
+                DeclarationCheckersDiagnosticComponent(this, declarationCheckers),
+                ExpressionCheckersDiagnosticComponent(this, expressionCheckers),
+                ErrorNodeDiagnosticCollectorComponent(this),
+                ControlFlowAnalysisDiagnosticComponent(this, declarationCheckers),
+            )
+        }
     }
 
     protected abstract fun onDiagnostic(diagnostic: FirPsiDiagnostic<*>)
@@ -75,7 +80,9 @@ internal abstract class AbstractFirIdeDiagnosticsCollector(
 
 private object CheckersFactory {
     private val extendedDeclarationCheckers = createDeclarationCheckers(ExtendedDeclarationCheckers)
-    private val commonDeclarationCheckers = createDeclarationCheckers(CommonDeclarationCheckers)
+
+    //TODO use JvmDeclarationCheckers only in JVM modules
+    private val commonDeclarationCheckers = createDeclarationCheckers(CommonDeclarationCheckers, JvmDeclarationCheckers)
 
     fun createDeclarationCheckers(useExtendedCheckers: Boolean): DeclarationCheckers =
         if (useExtendedCheckers) extendedDeclarationCheckers else commonDeclarationCheckers
@@ -86,7 +93,7 @@ private object CheckersFactory {
     // TODO hack to have all checkers present in DeclarationCheckers.memberDeclarationCheckers and similar
     // If use ExtendedDeclarationCheckers directly when DeclarationCheckers.memberDeclarationCheckers will not contain basicDeclarationCheckers
     @OptIn(SessionConfiguration::class)
-    private fun createDeclarationCheckers(declarationCheckers: DeclarationCheckers): DeclarationCheckers =
-        CheckersComponent().apply { register(declarationCheckers) }.declarationCheckers
+    private fun createDeclarationCheckers(vararg declarationCheckers: DeclarationCheckers): DeclarationCheckers =
+        CheckersComponent().apply { declarationCheckers.forEach(::register) }.declarationCheckers
 
 }
